@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RaidRoost Labs</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#10131c;color:#f4f5fa;font-family:Arial,sans-serif}
+header{text-align:center;padding:35px 15px;background:#191f30}
+h1{color:#65e6bd;margin:0 0 10px}
+p{color:#bbc3d4;line-height:1.8}
+main{max-width:950px;margin:25px auto;padding:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:15px}
+.card{background:#1b2232;border:1px solid #303b50;border-radius:14px;padding:20px}
+.card h2{color:#65e6bd;font-size:19px}
+button,.button{border:0;background:#16a982;color:white;padding:11px 17px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-block;margin-top:8px}
+.result{background:#111722;border-radius:8px;padding:10px;margin-top:12px;color:#d7e5e1;overflow-wrap:anywhere}
+small{color:#9ba8bb}
+footer{text-align:center;padding:25px;color:#8d99ac}
+</style>
+</head>
+<body>
+<header>
+<h1>RaidRoost Labs</h1>
+<p>مختبر التجارب والأدوات التي تعمل من متصفح PS4</p>
+<a class="button" href="../index.html">العودة إلى RaidRoost</a>
+</header>
+
+<main>
+<h2>تجارب المتصفح</h2>
+<div class="grid">
+
+<section class="card">
+<h2>معلومات الجهاز والمتصفح</h2>
+<p>اعرض معلومات المتصفح ودقة الشاشة وإمكانات JavaScript.</p>
+<button onclick="browserInfo()">فحص المتصفح</button>
+<div class="result" id="browserResult">بانتظار الفحص...</div>
+</section>
+
+<section class="card">
+<h2>اختبار يد التحكم</h2>
+<p>اختبر دعم المتصفح لواجهة Gamepad API. اضغط أي زر في يد التحكم أولاً.</p>
+<button onclick="gamepadTest()">فحص يد التحكم</button>
+<div class="result" id="gamepadResult">بانتظار الفحص...</div>
+</section>
+
+<section class="card">
+<h2>اختبار التخزين المحلي</h2>
+<p>اختبر إمكانية حفظ بيانات بسيطة في متصفحك.</p>
+<button onclick="storageTest()">اختبار التخزين</button>
+<div class="result" id="storageResult">لم يتم الاختبار بعد.</div>
+</section>
+
+<section class="card">
+<h2>اختبار JavaScript</h2>
+<p>اختبار بسيط لسرعة تنفيذ عمليات JavaScript في المتصفح.</p>
+<button onclick="performanceTest()">ابدأ الاختبار</button>
+<div class="result" id="performanceResult">بانتظار الاختبار...</div>
+</section>
+
+</div>
+
+<h2 style="margin-top:30px">مشاريع وتجارب متقدمة</h2>
+<div class="grid">
+
+<section class="card">
+<h2>Linux على PS4</h2>
+<p>مشروع لتشغيل توزيعات Linux على أجهزة PS4 المتوافقة.</p>
+<small>يتطلب استغلالاً مناسباً وPayload وملفات متوافقة مع إصدار النظام. هذه الصفحة لا تشغّل Linux وحدها.</small>
+</section>
+
+<section class="card">
+<h2>محاكيات المتصفح</h2>
+<p>مكان مخصص للمحاكيات التي تعمل باستخدام JavaScript أو WebAssembly.</p>
+<small>ستضاف المشاريع بعد التحقق من توافقها مع متصفح PS4.</small>
+</section>
+
+<section class="card">
+<h2>مشاريع Homebrew</h2>
+<p>تجارب وأدوات صنعها مجتمع PS4.</p>
+<small>ستضاف المشاريع مع مصادرها وإصداراتها ومتطلبات تشغيلها.</small>
+</section>
+
+</div>
+</main>
+
+<footer>RaidRoost Labs © 2026</footer>
+
+<script>
+function browserInfo(){
+ let result=document.getElementById("browserResult");
+ result.textContent=
+ "المتصفح: "+navigator.userAgent+
+ " | الشاشة: "+screen.width+" × "+screen.height+
+ " | JavaScript: متاح"+
+ " | اللغة: "+navigator.language;
+}
+
+function gamepadTest(){
+ let result=document.getElementById("gamepadResult");
+ if(!navigator.getGamepads){
+  result.textContent="هذا المتصفح لا يدعم Gamepad API.";
+  return;
+ }
+ let pads=navigator.getGamepads();
+ let found=false;
+ for(let i=0;i<pads.length;i++){
+  if(pads[i]){
+   found=true;
+   result.textContent="تم اكتشاف يد التحكم: "+pads[i].id+
+   " | عدد الأزرار: "+pads[i].buttons.length+
+   " | عدد المحاور: "+pads[i].axes.length;
+   break;
+  }
+ }
+ if(!found) result.textContent="لم يتم اكتشاف يد تحكم. اضغط أحد أزرار اليد ثم أعد الفحص.";
+}
+
+function storageTest(){
+ let result=document.getElementById("storageResult");
+ try{
+  localStorage.setItem("raidroost_test","working");
+  let value=localStorage.getItem("raidroost_test");
+  localStorage.removeItem("raidroost_test");
+  result.textContent=value==="working"?
+   "نجاح: التخزين المحلي يعمل.":"فشل التحقق من التخزين.";
+ }catch(e){
+  result.textContent="التخزين المحلي غير متاح: "+e.message;
+ }
+}
+
+function performanceTest(){
+ let result=document.getElementById("performanceResult");
+ let start=performance.now();
+ let total=0;
+ for(let i=0;i<1000000;i++) total+=i;
+ let elapsed=performance.now()-start;
+ result.textContent="انتهى الاختبار. الوقت: "+elapsed.toFixed(2)+
+ " ms | النتيجة: "+total;
+}
+</script>
+</body>
+</html>
